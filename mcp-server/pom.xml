@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.16</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>br.com.chatbotmcp</groupId>
+    <artifactId>mcp-server</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>mcp-server</name>
+    <description>MCP Server que expoe tools e traduz chamadas para a api-rest</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <!-- mcp e mcp-spring-webmvc precisam ficar na MESMA versao: a partir da 1.x
+             o core do SDK (io.modelcontextprotocol.sdk:mcp) evoluiu para 2.x, mas o
+             modulo de transporte HTTP para Spring WebMVC (mcp-spring-webmvc) parou
+             de ser publicado em 0.18.4. Misturar core 2.x com transporte 0.18.4
+             quebra em runtime, entao fixamos os dois na ultima versao onde foram
+             publicados juntos. -->
+        <mcp-sdk.version>0.18.4</mcp-sdk.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>${mcp-sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp-spring-webmvc</artifactId>
+            <version>${mcp-sdk.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

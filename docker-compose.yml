@@ -1,0 +1,53 @@
+services:
+  api-rest:
+    build: ./api-rest
+    ports:
+      - "8080:8080"
+    healthcheck:
+      # sem curl/wget na imagem: usa o /dev/tcp do bash pra checar a porta
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  mcp-server:
+    build: ./mcp-server
+    ports:
+      - "8081:8081"
+    environment:
+      # Spring Data Binding "relaxado": API_REST_BASE_URL vira a propriedade
+      # api-rest.base-url (application.properties). Dentro da rede do
+      # compose, o outro servico e alcancado pelo proprio nome ("api-rest"),
+      # nao por "localhost".
+      API_REST_BASE_URL: http://api-rest:8080
+    depends_on:
+      api-rest:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8081' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  chatbot:
+    build: ./chatbot
+    environment:
+      MCP_SERVER_URL: http://mcp-server:8081
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-ollama}
+      OPENAI_MODEL: ${OPENAI_MODEL:-llama3.1}
+      # host.docker.internal: forma padrao do Docker Desktop (Mac/Windows) de
+      # o container alcancar servicos rodando no host — aqui, o Ollama
+      # instalado nativamente no seu Mac (fora do compose, para nao perder
+      # aceleracao de GPU nem duplicar o download dos modelos).
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-http://host.docker.internal:11434/v1}
+    extra_hosts:
+      # necessario no Linux; no-op inofensivo no Docker Desktop (Mac/Windows).
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+    # mantem stdin/tty abertos para o console interativo do chatbot
+    stdin_open: true
+    tty: true

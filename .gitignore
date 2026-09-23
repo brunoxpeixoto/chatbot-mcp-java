@@ -1,0 +1,16 @@
+# Build output (cada um dos 3 projetos Maven)
+target/
+
+# Segredos / config local
+.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# SO
+.DS_Store
+
+# Estado de ferramentas locais (nao faz parte do projeto)
+.kilo/
