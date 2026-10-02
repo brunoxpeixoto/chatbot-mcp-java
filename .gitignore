@@ -14,3 +14,8 @@ target/
 
 # Estado de ferramentas locais (nao faz parte do projeto)
 .kilo/
+
+node_modules
+dist
+dist-ssr
+*.local
